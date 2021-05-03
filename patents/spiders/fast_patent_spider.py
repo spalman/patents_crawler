@@ -51,26 +51,28 @@ class PatentsSpider(scrapy.Spider):
         else:
             total_num_pages = response.meta["total_num_pages"]
         for res in responsejson["results"]["cluster"][0]["result"]:
-
-            title = res["patent"]["title"]
-            patent_code = res["patent"]["publication_number"]
-            link = f"https://patents.google.com/patent/{patent_code}/"
-            inventors = res["patent"]["inventor"]
-            assignee = res["patent"]["assignee"]
-            priority_date = res["patent"]["priority_date"]
-            filing_date = res["patent"]["filing_date"]
-            publication_date = res["patent"]["publication_date"]
-            item = {
-                "title": title,
-                "link": link,
-                "publication_number": patent_code,
-                "inventors": inventors,
-                "assignee": assignee,
-                "priority_date": priority_date,
-                "filing_date": filing_date,
-                "publication_date": publication_date,
-            }
-            yield item
+            try:
+                title = res["patent"].get("title")
+                patent_code = res["patent"].get("publication_number")
+                link = f"https://patents.google.com/patent/{patent_code}/"
+                inventors = res["patent"].get("inventor")
+                assignee = res["patent"].get("assignee")
+                priority_date = res["patent"].get("priority_date")
+                filing_date = res["patent"].get("filing_date")
+                publication_date = res["patent"].get("publication_date")
+                item = {
+                    "title": title,
+                    "link": link,
+                    "publication_number": patent_code,
+                    "inventors": inventors,
+                    "assignee": assignee,
+                    "priority_date": priority_date,
+                    "filing_date": filing_date,
+                    "publication_date": publication_date,
+                }
+                yield item
+            except:
+                continue
         if page_num < total_num_pages:
             page_num += 1
             url = queryencode(self.url_params(page=page_num))
